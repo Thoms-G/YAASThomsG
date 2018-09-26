@@ -1,0 +1,17 @@
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<h2>Profile</h2>
+    <p>
+        <div>Username : {{ user.username }}</div>
+        <div>Email : {{ user.email }}</div>
+        <div>First name : {{ user.first_name }}</div>
+        <div>Last name : {{ user.last_name }}</div>
+    </p>
+
+  <form method="post">
+  {% csrf_token %}
+      {{ update_user_form.as_p }}
+    <button type="submit">Submit</button>
+  </form>
+{% endblock %}
