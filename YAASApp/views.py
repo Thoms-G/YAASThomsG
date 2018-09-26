@@ -1,13 +1,14 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, render_to_response, redirect
+from django.shortcuts import render, render_to_response, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-from django.views import generic
+from django.views import generic, View
 
-from YAASApp.forms import ProfileForm, UserForm, UpdateUserForm
+from YAASApp.forms import ProfileForm, UserForm
 from YAASApp.models import Auction
 
 
@@ -44,16 +45,23 @@ def userlogin(request):
     return render_to_response('YAASApp/login.html', )
 
 
-@login_required
-@transaction.atomic
-def userdetail(request):
-    update_user_form = UpdateUserForm(request.POST, instance=request.user)
-    if request.method == 'POST':
-        if update_user_form.is_valid():
-            update_user_form.save()
-            return redirect('YAASApp:userdetail')
+class EditUserView(View):
+    def get(self, request):
+        u = request.user
+        return render(request, 'YAASApp/profile.html')
 
-    return render(request, 'YAASApp/profile.html', {'update_user_form': update_user_form})
+    def post(self, request):
+        u = request.user
+        if request.POST["new_email"] != u.email:
+            u.email = request.POST["new_email"]
+            u.save()
+
+        if request.POST["new_password"] is not None:
+            u.set_password(request.POST["new_password"])
+            u.save()
+        # Always redirect after a successful POST request
+        return HttpResponseRedirect(reverse('YAASApp:userdetail'))
+# TODO : faire deux classes, une pour le password et une pour le mail
 
 
 class AuctionIndex(generic.ListView):

@@ -9,9 +9,12 @@
         <div>Last name : {{ user.last_name }}</div>
     </p>
 
-  <form method="post">
+<form action="{% url 'YAASApp:userdetail' %}" method="post">
   {% csrf_token %}
-      {{ update_user_form.as_p }}
-    <button type="submit">Submit</button>
+      New email : <input type="text" name="new_email" id="new_email" value="{{ user.email }}">
+      <br>
+      New Password : <input type="password" name="new_password" id="new_password">
+      <br>
+    <button type="submit">Login</button>
   </form>
 {% endblock %}
