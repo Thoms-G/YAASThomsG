@@ -1,4 +1,5 @@
-from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import transaction
@@ -52,13 +53,22 @@ class EditUserView(View):
 
     def post(self, request):
         u = request.user
+        print(request.POST["new_email"])
+        print(request.POST["new_password"])
+        print(request.user.id)
         if request.POST["new_email"] != u.email:
+            print("je passe dans email")
             u.email = request.POST["new_email"]
             u.save()
+            #User.objects.filter(id=request.user.id).update(email=request.POST["new_email"])
 
-        if request.POST["new_password"] is not None:
+        if request.POST["new_password"] != '':
+            print("je passe dans pwd")
             u.set_password(request.POST["new_password"])
             u.save()
+            update_session_auth_hash(request, u)
+            messages.success(request, 'Your password was successfully updated!')
+
         # Always redirect after a successful POST request
         return HttpResponseRedirect(reverse('YAASApp:userdetail'))
 # TODO : faire deux classes, une pour le password et une pour le mail

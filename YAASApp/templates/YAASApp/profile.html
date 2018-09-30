@@ -13,8 +13,8 @@
   {% csrf_token %}
       New email : <input type="text" name="new_email" id="new_email" value="{{ user.email }}">
       <br>
-      New Password : <input type="password" name="new_password" id="new_password">
+      New Password : <input type="password" name="new_password" id="new_password" value="">
       <br>
-    <button type="submit">Login</button>
+    <button type="submit">Save Changes</button>
   </form>
 {% endblock %}

@@ -19,11 +19,3 @@ class ProfileForm(ModelForm):
     class Meta:
         model = Profile
         fields = ('preferred_language',)
-
-
-class UpdateUserForm(ModelForm):
-    class Meta:
-        model = User
-        fields = ('email', 'password')
-
-
