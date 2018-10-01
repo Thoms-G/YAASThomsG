@@ -1,10 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<h1>{{ auction.title }}</h1>
 
-</body>
-</html>
+<h3>Description</h3>
+<p>{{ auction.description }}</p>
+<p><strong>Minimum Price : </strong> {{ auction.minimum_price }}</p>
+<p><strong>Current Price : </strong> {{ auction.current_price }}</p>
+<p><strong>Status : </strong> {{ auction.status }}</p>
+<p><strong>Deadline : </strong> {{ auction.deadline }}</p>
+
+<h3>Seller</h3>
+<p>{{ auction.seller.username }}</p>
+
+<!-- TODO : Bid on the auction if user authenticated + deadline if status OK-->

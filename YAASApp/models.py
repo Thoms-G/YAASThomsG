@@ -1,6 +1,4 @@
 import datetime
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -17,9 +15,11 @@ class Profile(models.Model):
 class Auction(models.Model):
     title = models.CharField(max_length=100, blank=True)
     description = models.TextField(blank=True)
-    minimum_price = models.FloatField()
-    deadline = models.DateTimeField(default=datetime.datetime.today()+datetime.timedelta(days=1))
+    minimum_price = models.DecimalField(max_digits=11, decimal_places=2)
+    current_price = models.DecimalField(max_digits=11, decimal_places=2)
+    deadline = models.DateTimeField(default=datetime.datetime.today()+datetime.timedelta(minutes=1)) #TODO : timedelta(days=3)
     status = models.CharField(max_length=2,
                               choices=(('AC', 'Active'), ('BA', 'Banned'), ('DU', 'DUE'), ('AD', 'Adjudicated')),
                               default='AC')
-    seller = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=1)
+    seller = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=1, related_name='seller')
+    last_bidder = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='last_bidder', null=True)

@@ -9,6 +9,7 @@
         <tr>
             <td>Logout</td>
             <td><a href="{% url 'YAASApp:userdetail' %}">Profile</a></td>
+            <td><a href="{% url 'YAASApp:createauction' %}">Create new auction</a></td>
         </tr>
     </table>
 {% else %}
@@ -23,7 +24,9 @@
 {% if auction_list %}
     <ul>
     {% for auction in auction_list %}
-        <li>{{ auction.title }}</li>
+        <li>{{ auction.title }}
+            <div><a href="{% url 'YAASApp:auctiondetail' auction.id %}">Detail</a> </div>
+        </li>
     {% endfor %}
    </ul>
 {% else %}

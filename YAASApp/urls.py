@@ -6,6 +6,8 @@ app_name = 'YAASApp'
 urlpatterns = (
     path('register/', views.register, name='register'),
     path('login/', views.userlogin, name='login'),
+    path('profile/', views.EditUserView.as_view(), name='userdetail'),
+    path('createauction/', views.createauction, name='createauction'),
     path('', views.AuctionIndex.as_view(), name='auctionindex'),
-    path('profile/', views.EditUserView.as_view(), name='userdetail')
+    path('detail/<int:pk>/', views.AuctionDetail.as_view(), name='auctiondetail')
 )

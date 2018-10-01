@@ -1,15 +1,18 @@
+import datetime
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import transaction
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response, redirect, get_object_or_404
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views import generic, View
 
-from YAASApp.forms import ProfileForm, UserForm
+from YAASApp.forms import ProfileForm, UserForm, AuctionForm
 from YAASApp.models import Auction
 
 
@@ -27,6 +30,7 @@ def register(request):
             profile.user = user
             profile.save()
             return redirect('YAASApp:auctionindex')
+
     else:
         user_form = UserForm(data=request.POST)
         profile_form = ProfileForm(data=request.POST)
@@ -47,31 +51,48 @@ def userlogin(request):
 
 
 class EditUserView(View):
+    @method_decorator(login_required)
     def get(self, request):
         u = request.user
         return render(request, 'YAASApp/profile.html')
 
+    @method_decorator(login_required)
     def post(self, request):
         u = request.user
-        print(request.POST["new_email"])
-        print(request.POST["new_password"])
-        print(request.user.id)
+
         if request.POST["new_email"] != u.email:
-            print("je passe dans email")
             u.email = request.POST["new_email"]
             u.save()
-            #User.objects.filter(id=request.user.id).update(email=request.POST["new_email"])
 
         if request.POST["new_password"] != '':
-            print("je passe dans pwd")
             u.set_password(request.POST["new_password"])
             u.save()
             update_session_auth_hash(request, u)
-            messages.success(request, 'Your password was successfully updated!')
 
         # Always redirect after a successful POST request
         return HttpResponseRedirect(reverse('YAASApp:userdetail'))
-# TODO : faire deux classes, une pour le password et une pour le mail
+
+
+@login_required
+def createauction(request):
+    if request.method == 'POST':
+        auction_form = AuctionForm(data=request.POST)
+
+        if auction_form.is_valid():
+            auction = auction_form.save(commit=False)
+
+            if auction.deadline < datetime.datetime.now(auction.deadline.tzinfo)+datetime.timedelta(days=3):
+                messages.warning(request, "Deadline is not valid")
+                return render(request, 'YAASApp/createauction.html', {'auction_form': auction_form})
+
+            auction.seller = request.user
+            auction.last_bidder = None
+            auction.current_price = auction_form.__getitem__('minimum_price').value()
+            auction.save()
+            return HttpResponseRedirect(reverse('YAASApp:auctionindex'))
+
+    auction_form = AuctionForm(data=request.POST)
+    return render(request, 'YAASApp/createauction.html', {'auction_form': auction_form})
 
 
 class AuctionIndex(generic.ListView):
@@ -82,8 +103,6 @@ class AuctionIndex(generic.ListView):
         return Auction.objects.all()
 
 
-@login_required
 class AuctionDetail(generic.DetailView):
     model = Auction
     template_name = 'YAASApp/detailauction.html'
-    # TODO : AuctionDetail
