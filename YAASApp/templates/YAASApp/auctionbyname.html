@@ -1,16 +1,15 @@
-<!-- templates/home.html -->
 {% extends 'base.html' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Search results{% endblock %}
 
 {% block content %}
 <form method="get" action="{% url 'YAASApp:auction_by_name' %}">
      <input class="searchfield" id="searchbox" name="searchbox" type="text" value="{{ request.GET.searchbox }}" placeholder="Search..."/>
 </form>
 
-{% if auction_list %}
+{% if auctions %}
     <ul>
-    {% for auction in auction_list %}
+    {% for auction in auctions %}
         <li>{{ auction.title }}
             <div><a href="{% url 'YAASApp:auctiondetail' auction.id %}">Detail</a> </div>
         </li>

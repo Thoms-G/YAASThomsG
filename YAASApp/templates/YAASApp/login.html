@@ -2,12 +2,10 @@
 
 {% block content %}
 <h2>Login</h2>
-    {% csrf_token %}
   <form action="{% url 'YAASApp:login' %}" method="post">
-      Username : <input type="text" name="username" id="username">
-      <br>
-      Password : <input type="password" name="password" id="password">
-      <br>
+      {% csrf_token %}
+      <div>Username : <input type="text" name="username" id="username"></div>
+      <div>Password : <input type="password" name="password" id="password"></div>
     <button type="submit">Login</button>
   </form>
 {% endblock %}

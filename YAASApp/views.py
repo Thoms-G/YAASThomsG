@@ -73,7 +73,7 @@ class EditUserView(View):
 
 
 @login_required
-def createauction(request):
+def create_auction(request):
     if request.method == 'POST':
         auction_form = AuctionForm(data=request.POST)
 
@@ -100,6 +100,17 @@ class AuctionIndex(generic.ListView):
 
     def get_queryset(self):
         return Auction.objects.filter(status='AC')
+
+
+class AuctionSearch(generic.ListView):
+    template_name = 'YAASApp/auctionbyname.html'
+    context_object_name = 'auctions'
+
+    @method_decorator(csrf_exempt)
+    def get_queryset(self):
+        intitle = self.request.GET['searchbox']
+        return Auction.objects.filter(status='AC', title__icontains=intitle)
+
 
 
 class AuctionDetail(generic.DetailView):
