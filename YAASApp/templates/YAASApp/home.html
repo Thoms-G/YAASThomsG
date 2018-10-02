@@ -1,26 +1,10 @@
 <!-- templates/home.html -->
+{% extends 'base.html' %}
 
 {% block title %}Home{% endblock %}
 
 {% block content %}
-{% if user.is_authenticated %}
-    Hi {{ user.username }}!
-    <table>
-        <tr>
-            <td>Logout</td>
-            <td><a href="{% url 'YAASApp:userdetail' %}">Profile</a></td>
-            <td><a href="{% url 'YAASApp:createauction' %}">Create new auction</a></td>
-        </tr>
-    </table>
-{% else %}
-    <p>You are not logged in</p>
-    <table>
-        <tr>
-            <td><a href="{% url 'YAASApp:register' %}">Register</a></td>
-            <td><a href="{% url 'YAASApp:login' %}">Login</a></td>
-        </tr>
-    </table>
-{% endif %}
+
 {% if auction_list %}
     <ul>
     {% for auction in auction_list %}

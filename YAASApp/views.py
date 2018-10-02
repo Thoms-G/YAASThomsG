@@ -53,7 +53,6 @@ def userlogin(request):
 class EditUserView(View):
     @method_decorator(login_required)
     def get(self, request):
-        u = request.user
         return render(request, 'YAASApp/profile.html')
 
     @method_decorator(login_required)
@@ -100,9 +99,40 @@ class AuctionIndex(generic.ListView):
     context_object_name = 'auction_list'
 
     def get_queryset(self):
-        return Auction.objects.all()
+        return Auction.objects.filter(status='AC')
 
 
 class AuctionDetail(generic.DetailView):
     model = Auction
     template_name = 'YAASApp/detailauction.html'
+
+
+class AuctionUser(generic.ListView):
+    template_name = 'YAASApp/userauctions.html'
+    context_object_name = 'user_auctions'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(AuctionUser, self).dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return Auction.objects.filter(seller=self.request.user, status='AC')
+
+
+class EditUserAuction(View):
+    @method_decorator(login_required)
+    def get(self, request, id):
+        auction = get_object_or_404(Auction, id=id)
+        return render(request, 'YAASApp/editauction.html', {'auction': auction})
+
+    @method_decorator(login_required)
+    def post(self, request, id):
+        auction = get_object_or_404(Auction, id=id)
+
+        if request.POST['description'] != auction.description:
+            auction.description = request.POST['description']
+            auction.save()
+
+        return HttpResponseRedirect(reverse('YAASApp:edit_user_auction', args=(auction.id,)))
+
+

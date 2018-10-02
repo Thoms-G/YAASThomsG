@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Your auctions{% endblock %}
+
+{% block content %}
+
+{% if user_auctions %}
+    <ul>
+    {% for auction in user_auctions %}
+        <li>{{ auction.title }}
+            <div><a href="{% url 'YAASApp:edit_user_auction' auction.id %}">Detail/Edit</a> </div>
+        </li>
+    {% endfor %}
+   </ul>
+{% else %}
+    <p>No auctions available</p>
+{% endif %}
+{% endblock %}

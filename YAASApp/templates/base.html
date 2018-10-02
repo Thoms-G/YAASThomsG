@@ -7,8 +7,34 @@
 </head>
 <body>
   <main>
+  <div>
+      {% if user.is_authenticated %}
+        Hi {{ user.username }}!
+        <table>
+            <tr>
+                <td><a href="{% url 'YAASApp:auctionindex' %}">YAAS</a></td>
+                <td><a href="{% url 'YAASApp:userdetail' %}">Profile</a></td>
+                <td><a href="{% url 'YAASApp:createauction' %}">Create new auction</a></td>
+                <td><a href="{% url 'YAASApp:auctionuser' %}">Your auctions</a></td>
+                <td>Logout</td>
+            </tr>
+        </table>
+        {% else %}
+            <p>You are not logged in</p>
+            <table>
+                <tr>
+                    <td><a href="{% url 'YAASApp:auctionindex' %}">YAAS</a></td>
+                    <td><a href="{% url 'YAASApp:register' %}">Register</a></td>
+                    <td><a href="{% url 'YAASApp:login' %}">Login</a></td>
+                </tr>
+            </table>
+        {% endif %}
+  </div>
+  <br/>
+  <div>
     {% block content %}
     {% endblock %}
+  </div>
   </main>
 </body>
 </html>
