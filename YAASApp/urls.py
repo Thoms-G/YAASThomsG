@@ -5,7 +5,8 @@ from . import views
 app_name = 'YAASApp'
 urlpatterns = (
     path('register/', views.register, name='register'),
-    path('login/', views.userlogin, name='login'),
+    path('login/', views.user_login, name='login'),
+    path('logout/', views.user_logout, name='logout'),
     path('profile/', views.EditUserView.as_view(), name='userdetail'),
     path('createauction/', views.create_auction, name='createauction'),
     path('', views.AuctionIndex.as_view(), name='auctionindex'),

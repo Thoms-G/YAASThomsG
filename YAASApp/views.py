@@ -1,7 +1,7 @@
 import datetime
 
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, update_session_auth_hash
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import transaction
@@ -38,7 +38,7 @@ def register(request):
 
 
 @csrf_exempt
-def userlogin(request):
+def user_login(request):
     username = request.POST.get('username')
     password = request.POST.get('password')
     user = authenticate(request, username=username, password=password)
@@ -48,6 +48,12 @@ def userlogin(request):
         return redirect('YAASApp:auctionindex')
 
     return render_to_response('YAASApp/login.html', )
+
+
+@login_required
+def user_logout(request):
+    logout(request)
+    return redirect('YAASApp:auctionindex')
 
 
 class EditUserView(View):
@@ -72,6 +78,8 @@ class EditUserView(View):
         return HttpResponseRedirect(reverse('YAASApp:userdetail'))
 
 
+# TODO : Ask for confirmation
+# TODO : Send a confirmation email
 @login_required
 def create_auction(request):
     if request.method == 'POST':
@@ -110,7 +118,6 @@ class AuctionSearch(generic.ListView):
     def get_queryset(self):
         intitle = self.request.GET['searchbox']
         return Auction.objects.filter(status='AC', title__icontains=intitle)
-
 
 
 class AuctionDetail(generic.DetailView):

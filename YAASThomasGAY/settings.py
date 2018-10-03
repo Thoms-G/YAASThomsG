@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 # Login
-LOGIN_URL = ['/YAASApp/userlogin/']
+LOGIN_URL = ['/YAASApp/user_login/']
 LOGIN_REDIRECT_URL = 'YAASApp/'
 
 # Application definition

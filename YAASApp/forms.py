@@ -1,18 +1,17 @@
 import datetime
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-#from django.db.models.functions import datetime
+# from django.db.models.functions import datetime
 from django.forms import ModelForm
 
 from YAASApp.models import Profile, Auction
 
 
-class UserForm(ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput())
-
+class UserForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ('username', 'email', 'password', 'first_name', 'last_name')
+        fields = ('username', 'email', 'first_name', 'last_name')
 
 
 class ProfileForm(ModelForm):

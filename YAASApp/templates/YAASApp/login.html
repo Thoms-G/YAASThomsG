@@ -5,6 +5,7 @@
   <form action="{% url 'YAASApp:login' %}" method="post">
       {% csrf_token %}
       <div>Username : <input type="text" name="username" id="username"></div>
+      <br/>
       <div>Password : <input type="password" name="password" id="password"></div>
     <button type="submit">Login</button>
   </form>
