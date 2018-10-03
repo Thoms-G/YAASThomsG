@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm auction creation{% endblock %}
+<h1>Confirm auction creation</h1>
+{% block content %}
+<form method="post" action="{% url 'YAASApp:saveauction' %}">
+    {% csrf_token %}
+    {{ conf_form.as_p }}
+    <input type="submit" value="Submit">
+</form>
+{% endblock %}

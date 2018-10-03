@@ -12,7 +12,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views import generic, View
 
-from YAASApp.forms import ProfileForm, UserForm, AuctionForm
+from YAASApp.forms import ProfileForm, UserForm, AuctionForm, ConfAuctionForm
 from YAASApp.models import Auction
 
 
@@ -78,7 +78,6 @@ class EditUserView(View):
         return HttpResponseRedirect(reverse('YAASApp:userdetail'))
 
 
-# TODO : Ask for confirmation
 # TODO : Send a confirmation email
 @login_required
 def create_auction(request):
@@ -92,14 +91,36 @@ def create_auction(request):
                 messages.warning(request, "Deadline is not valid")
                 return render(request, 'YAASApp/createauction.html', {'auction_form': auction_form})
 
-            auction.seller = request.user
-            auction.last_bidder = None
-            auction.current_price = auction_form.__getitem__('minimum_price').value()
-            auction.save()
-            return HttpResponseRedirect(reverse('YAASApp:auctionindex'))
+            cd = auction_form.cleaned_data
+            b_title = cd['title']
+            b_description = cd['description']
+            b_minimum_price = cd['minimum_price']
+            b_deadline = cd['deadline']
+            conf_form = ConfAuctionForm({'b_title': b_title,
+                                         'b_description': b_description,
+                                         'b_minimum_price': b_minimum_price,
+                                         'b_deadline': b_deadline})
+            return render(request, 'YAASApp/auctionconf.html', {'conf_form': conf_form})
 
     auction_form = AuctionForm(data=request.POST)
     return render(request, 'YAASApp/createauction.html', {'auction_form': auction_form})
+
+@login_required
+def save_auction(request):
+    option = request.POST['option']
+    if option == 'Yes':
+        title = request.POST['b_title']
+        description = request.POST['b_description']
+        m_p = request.POST['b_minimum_price']
+        deadline = request.POST['b_deadline']
+        auction = Auction(title=title, description=description,
+                          minimum_price=m_p, deadline=deadline,
+                          current_price=m_p, seller=request.user,
+                          last_bidder=None)
+        auction.save()
+        return HttpResponseRedirect(reverse('YAASApp:auctionuser'))
+    else:
+        return redirect('YAASApp:auctionindex')
 
 
 class AuctionIndex(generic.ListView):

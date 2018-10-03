@@ -30,3 +30,12 @@ class AuctionForm(ModelForm):
     class Meta:
         model = Auction
         fields = ('title', 'description', 'minimum_price', 'deadline')
+
+
+class ConfAuctionForm(forms.Form):
+    CHOICES = [(x, x) for x in ("Yes", "No")]
+    option = forms.ChoiceField(choices=CHOICES)
+    b_title = forms.CharField(widget=forms.HiddenInput())
+    b_description = forms.CharField(widget=forms.HiddenInput())
+    b_minimum_price = forms.FloatField(widget=forms.HiddenInput())
+    b_deadline = forms.DateTimeField(widget=forms.HiddenInput())
