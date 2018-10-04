@@ -17,6 +17,9 @@ from YAASApp.models import Auction
 
 
 # Register a new user
+from YAASApp.utils import util_send_mail
+
+
 def register(request):
     if request.method == 'POST':
         user_form = UserForm(data=request.POST)
@@ -118,6 +121,7 @@ def save_auction(request):
                           current_price=m_p, seller=request.user,
                           last_bidder=None)
         auction.save()
+        util_send_mail('Auction creation', 'Your auction has successfully been created!', request.user.email)
         return HttpResponseRedirect(reverse('YAASApp:auctionuser'))
     else:
         return redirect('YAASApp:auctionindex')

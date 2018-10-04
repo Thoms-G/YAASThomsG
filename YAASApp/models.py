@@ -23,3 +23,9 @@ class Auction(models.Model):
                               default='AC')
     seller = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=1, related_name='seller')
     last_bidder = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='last_bidder', null=True)
+
+
+class Bid(models.Model):
+    bidder = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='bidder', null=False)
+    auction = models.ForeignKey(Auction, on_delete=models.DO_NOTHING, related_name='auction', null=False)
+    bid_price = models.DecimalField(max_digits=11, decimal_places=2)
