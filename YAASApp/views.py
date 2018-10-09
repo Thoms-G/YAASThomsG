@@ -1,4 +1,5 @@
 import datetime
+from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
@@ -13,8 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views import generic, View
 
 from YAASApp.forms import ProfileForm, UserForm, AuctionForm, ConfAuctionForm
-from YAASApp.models import Auction
-
+from YAASApp.models import Auction, Bid
 
 # Register a new user
 from YAASApp.utils import util_send_mail
@@ -177,5 +177,27 @@ class EditUserAuction(View):
             auction.save()
 
         return HttpResponseRedirect(reverse('YAASApp:edit_user_auction', args=(auction.id,)))
+
+
+@login_required
+def bid_auction(request, auction_id):
+    auction = get_object_or_404(Auction, pk=auction_id)
+    if request.POST['bid_price'] != '':
+        bid_price = Decimal(request.POST['bid_price'])
+
+        if auction.seller != request.user and auction.current_price < bid_price and auction.last_bidder != request.user:
+            auction.last_bidder = request.user
+            auction.current_price = bid_price
+            auction.save()
+            bid = Bid(bidder=request.user, auction=auction, bid_price=bid_price)
+            bid.save()
+            messages.add_message(request, messages.INFO, "Bid saved")
+        else:
+            messages.add_message(request, messages.ERROR, "Bid is not conform (check the price)")
+
+    else:
+        messages.add_message(request, messages.ERROR, "Bid is not conform (check the price)")
+
+    return HttpResponseRedirect(reverse("YAASApp:auctiondetail", args=(auction_id,)))
 
 

@@ -15,4 +15,5 @@ urlpatterns = (
     path('detail/<int:pk>/', views.AuctionDetail.as_view(), name='auctiondetail'),
     path('auctionuser/', views.AuctionUser.as_view(), name='auctionuser'),
     path('editauction/<int:id>', views.EditUserAuction.as_view(), name='edit_user_auction'),
+    path('bidauction/<int:auction_id>', views.bid_auction, name='bid_auction')
 )

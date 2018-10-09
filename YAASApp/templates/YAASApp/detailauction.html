@@ -14,4 +14,22 @@
     <p><strong>Seller :</strong>{{ auction.seller.username }}</p>
 
 <!-- TODO : Bid on the auction if user authenticated + deadline if status OK-->
+
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if auction.seller != user and auction.last_bidder != user and user.is_authenticated %}
+        <h3>You can bid on this auction</h3>
+        <form method="post" action="{% url "YAASApp:bid_auction" auction.id %}">
+            {% csrf_token %}
+            Bid price: <input type="number" placeholder="10,0" id="bid_price" name="bid_price" step=".01">
+            <br/>
+            <button type="submit">Bid</button>
+        </form>
+    {% endif %}
 {% endblock %}
