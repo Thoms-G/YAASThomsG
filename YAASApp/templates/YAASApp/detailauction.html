@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block title %}Auction detail{% endblock %}
 
@@ -7,11 +8,11 @@
 
     <h3>Description</h3>
     <p>{{ auction.description }}</p>
-    <p><strong>Minimum Price : </strong> {{ auction.minimum_price }}</p>
-    <p><strong>Current Price : </strong> {{ auction.current_price }}</p>
-    <p><strong>Status : </strong> {{ auction.status }}</p>
-    <p><strong>Deadline : </strong> {{ auction.deadline }}</p>
-    <p><strong>Seller :</strong>{{ auction.seller.username }}</p>
+    <p><strong>{% trans "Minimum Price" %} : </strong> {{ auction.minimum_price }}</p>
+    <p><strong>{% trans "Current Price" %} : </strong> {{ auction.current_price }}</p>
+    <p><strong>{% trans "Status" %} : </strong> {{ auction.status }}</p>
+    <p><strong>{% trans "Deadline" %} : </strong> {{ auction.deadline }}</p>
+    <p><strong>{% trans "Seller" %} :</strong>{{ auction.seller.username }}</p>
 
 
     {% if messages %}
@@ -23,7 +24,7 @@
     {% endif %}
 
     {% if auction.seller != user and auction.last_bidder != user and user.is_authenticated %}
-        <h3>You can bid on this auction</h3>
+        <h3>{% trans "You can bid on this auction" %}</h3>
         <form method="post" action="{% url "YAASApp:bid_auction" auction.id %}">
             {% csrf_token %}
             Bid price: <input type="number" placeholder="10,0" id="bid_price" name="bid_price" step=".01">

@@ -1,22 +1,23 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block title %}Profile{% endblock %}
 
 {% block content %}
 <h2>Profile</h2>
     <p>
-        <div>Username : {{ user.username }}</div>
-        <div>Email : {{ user.email }}</div>
-        <div>First name : {{ user.first_name }}</div>
-        <div>Last name : {{ user.last_name }}</div>
+        <div>{% trans "Username" %} : {{ user.username }}</div>
+        <div>{% trans "Email" %} : {{ user.email }}</div>
+        <div>{% trans "First name" %} : {{ user.first_name }}</div>
+        <div>{% trans "Last name" %} : {{ user.last_name }}</div>
     </p>
 
 <form action="{% url 'YAASApp:userdetail' %}" method="post">
   {% csrf_token %}
-      New email : <input type="text" name="new_email" id="new_email" value="{{ user.email }}">
+      {% trans "New email" %} : <input type="text" name="new_email" id="new_email" value="{{ user.email }}">
       <br>
-      New Password : <input type="password" name="new_password" id="new_password" value="">
+      {% trans "New Password" %} : <input type="password" name="new_password" id="new_password" value="">
       <br>
-    <button type="submit">Save Changes</button>
+    <button type="submit">{% trans "Save Changes" %}</button>
   </form>
 {% endblock %}

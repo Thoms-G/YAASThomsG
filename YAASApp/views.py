@@ -9,15 +9,23 @@ from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response, redirect, get_object_or_404
 from django.urls import reverse
+from django.utils import translation
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views import generic, View
-
+from django.utils.translation import ugettext as _
 from YAASApp.forms import ProfileForm, UserForm, AuctionForm, ConfAuctionForm
 from YAASApp.models import Auction, Bid
 
 # Register a new user
 from YAASApp.utils import util_send_mail
+
+
+def change_language(request, lang_code):
+    translation.activate(lang_code)
+    request.session[translation.LANGUAGE_SESSION_KEY] = lang_code
+    messages.add_message(request, messages.INFO, "language change to"+lang_code)
+    return HttpResponseRedirect(reverse("YAASApp:auctionindex"))
 
 
 def register(request):
@@ -196,12 +204,12 @@ def bid_auction(request, auction_id):
             bid = Bid(bidder=request.user, auction=auction, bid_price=bid_price)
             bid.save()
             util_send_mail('New bid on your auction', 'A new bid has been done on your auction', auction.seller.email)
-            messages.add_message(request, messages.INFO, "Bid saved")
+            messages.add_message(request, messages.INFO, _("Bid saved"))
         else:
-            messages.add_message(request, messages.ERROR, "Bid is not conform (check the price)")
+            messages.add_message(request, messages.ERROR, _("Bid is not conform (check the price)"))
 
     else:
-        messages.add_message(request, messages.ERROR, "Bid is not conform (check the price)")
+        messages.add_message(request, messages.ERROR, _("Bid is not conform (check the price)"))
 
     return HttpResponseRedirect(reverse("YAASApp:auctiondetail", args=(auction_id,)))
 

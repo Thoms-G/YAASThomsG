@@ -1,5 +1,6 @@
 <!-- templates/home.html -->
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block title %}Home{% endblock %}
 
@@ -17,6 +18,6 @@
     {% endfor %}
    </ul>
 {% else %}
-    <p>No auctions available</p>
+    <p>{% blocktrans %}{{ "No auctions available" }}{% endblocktrans %}</p>
 {% endif %}
 {% endblock %}

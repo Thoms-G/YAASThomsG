@@ -4,6 +4,7 @@ from . import views
 
 app_name = 'YAASApp'
 urlpatterns = (
+    path('language/<slug:lang_code>', views.change_language, name='language'),
     path('register/', views.register, name='register'),
     path('login/', views.user_login, name='login'),
     path('logout/', views.user_logout, name='logout'),

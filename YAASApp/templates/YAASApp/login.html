@@ -1,12 +1,13 @@
 {% block title %}Login{% endblock %}
+{% load i18n %}
 
 {% block content %}
 <h2>Login</h2>
   <form action="{% url 'YAASApp:login' %}" method="post">
       {% csrf_token %}
-      <div>Username : <input type="text" name="username" id="username"></div>
+      <div>{% trans "Username" %} : <input type="text" name="username" id="username"></div>
       <br/>
-      <div>Password : <input type="password" name="password" id="password"></div>
-    <button type="submit">Login</button>
+      <div>{% trans "Password" %} : <input type="password" name="password" id="password"></div>
+    <button type="submit">{% trans "Login" %}</button>
   </form>
 {% endblock %}
