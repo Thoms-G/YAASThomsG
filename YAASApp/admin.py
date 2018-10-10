@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 
-from .models import Profile, Auction
+from .models import Profile, Auction, Bid
 
 
 class ProfileInline(admin.StackedInline):
@@ -23,3 +23,4 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.register(Profile)
 admin.site.register(Auction)
+admin.site.register(Bid)
