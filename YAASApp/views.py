@@ -81,7 +81,7 @@ class EditUserView(View):
         return HttpResponseRedirect(reverse('YAASApp:userdetail'))
 
 
-# TODO : Send a confirmation email
+
 @login_required
 def create_auction(request):
     if request.method == 'POST':
@@ -185,12 +185,17 @@ def bid_auction(request, auction_id):
     if request.POST['bid_price'] != '':
         bid_price = Decimal(request.POST['bid_price'])
 
-        if auction.seller != request.user and auction.current_price < bid_price and auction.last_bidder != request.user:
+        if auction.seller != request.user and auction.current_price < bid_price and auction.last_bidder != request.user\
+                and auction.status == 'AC':
+            if auction.last_bidder is not None:
+                util_send_mail('New bid on your auction', 'A new bid has been done on the auction you were wining',
+                               auction.last_bidder.email)
             auction.last_bidder = request.user
             auction.current_price = bid_price
             auction.save()
             bid = Bid(bidder=request.user, auction=auction, bid_price=bid_price)
             bid.save()
+            util_send_mail('New bid on your auction', 'A new bid has been done on your auction', auction.seller.email)
             messages.add_message(request, messages.INFO, "Bid saved")
         else:
             messages.add_message(request, messages.ERROR, "Bid is not conform (check the price)")
