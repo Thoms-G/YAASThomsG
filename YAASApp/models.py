@@ -6,7 +6,7 @@ from django.db import models
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    preferred_language = models.CharField(max_length=2, choices=(('EN', 'English'), ('FR', 'Francais')), default='EN')
+    preferred_language = models.CharField(max_length=2, choices=(('en', 'English'), ('fr', 'Francais')), default='EN')
 
     def __str__(self):
         return self.user.__str__() + self.preferred_language

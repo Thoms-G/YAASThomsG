@@ -25,6 +25,12 @@ def change_language(request, lang_code):
     translation.activate(lang_code)
     request.session[translation.LANGUAGE_SESSION_KEY] = lang_code
     messages.add_message(request, messages.INFO, "language change to"+lang_code)
+    print(lang_code)
+    if request.user.is_authenticated:
+        user = request.user
+        user.profile.preferred_language = lang_code
+        print(user.profile.preferred_language)
+        user.profile.save()
     return HttpResponseRedirect(reverse("YAASApp:auctionindex"))
 
 
@@ -56,7 +62,7 @@ def user_login(request):
 
     if user is not None:
         login(request, user)
-        return redirect('YAASApp:auctionindex')
+        return HttpResponseRedirect(reverse('YAASApp:language', args=(user.profile.preferred_language,)))
 
     return render_to_response('YAASApp/login.html', )
 
