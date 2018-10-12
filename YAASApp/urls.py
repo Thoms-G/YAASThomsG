@@ -1,6 +1,6 @@
 from django.urls import path
 
-from YAASApp.api_rest import api_auction_list, api_auction_by_id, api_auction_by_title
+from YAASApp.api_rest import api_auction_list, api_auction_by_id, api_auction_by_title, api_bid_auction
 from . import views
 
 app_name = 'YAASApp'
@@ -22,4 +22,5 @@ urlpatterns = (
     path('api/auctions/', api_auction_list),
     path('api/auctions/<int:auction_id>', api_auction_by_id),
     path('api/auctionsbytitle/', api_auction_by_title),
+    path('api/bid/', api_bid_auction),
 )
