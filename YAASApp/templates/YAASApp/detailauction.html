@@ -32,4 +32,11 @@
             <button type="submit">Bid</button>
         </form>
     {% endif %}
+    {% if user.is_superuser %}
+        <h3>Ban this auction</h3>
+        <form method="post" action="{% url "YAASApp:ban_auction" auction.id %}">
+            {% csrf_token %}
+            <button type="submit">Ban</button>
+        </form>
+    {% endif %}
 {% endblock %}

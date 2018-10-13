@@ -2,10 +2,9 @@ import datetime
 from decimal import Decimal
 
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response, redirect, get_object_or_404
 from django.urls import reverse
@@ -24,7 +23,7 @@ from YAASApp.utils import util_send_mail
 def change_language(request, lang_code):
     translation.activate(lang_code)
     request.session[translation.LANGUAGE_SESSION_KEY] = lang_code
-    messages.add_message(request, messages.INFO, "language change to"+lang_code)
+    messages.add_message(request, messages.INFO, "language change to" + lang_code)
 
     if request.user.is_authenticated:
         user = request.user
@@ -59,9 +58,12 @@ def user_login(request):
     password = request.POST.get('password')
     user = authenticate(request, username=username, password=password)
 
-    if user is not None:
+    if user is not None and user.is_superuser is False:
         login(request, user)
         return HttpResponseRedirect(reverse('YAASApp:language', args=(user.profile.preferred_language,)))
+    if user is not None and user.is_superuser:
+        login(request, user)
+        return HttpResponseRedirect(reverse('YAASApp:auctionindex'))
 
     return render_to_response('YAASApp/login.html', )
 
@@ -94,7 +96,6 @@ class EditUserView(View):
         return HttpResponseRedirect(reverse('YAASApp:userdetail'))
 
 
-
 @login_required
 def create_auction(request):
     if request.method == 'POST':
@@ -103,7 +104,7 @@ def create_auction(request):
         if auction_form.is_valid():
             auction = auction_form.save(commit=False)
 
-            if auction.deadline < datetime.datetime.now(auction.deadline.tzinfo)+datetime.timedelta(days=3):
+            if auction.deadline < datetime.datetime.now(auction.deadline.tzinfo) + datetime.timedelta(days=3):
                 messages.warning(request, "Deadline is not valid")
                 return render(request, 'YAASApp/createauction.html', {'auction_form': auction_form})
 
@@ -120,6 +121,7 @@ def create_auction(request):
 
     auction_form = AuctionForm(data=request.POST)
     return render(request, 'YAASApp/createauction.html', {'auction_form': auction_form})
+
 
 @login_required
 def save_auction(request):
@@ -198,17 +200,18 @@ def bid_auction(request, auction_id):
     if request.POST['bid_price'] != '':
         bid_price = Decimal(request.POST['bid_price'])
 
-        if auction.seller != request.user and auction.current_price < bid_price and auction.last_bidder != request.user\
+        if auction.seller != request.user and auction.current_price < bid_price and auction.last_bidder != request.user \
                 and auction.status == 'AC':
             if auction.last_bidder is not None:
-                util_send_mail('New bid on your auction', 'A new bid has been done on the auction you were wining',
-                               auction.last_bidder.email)
+                util_send_mail('New bid on your auction', 'A new bid has been done on the auction you were wining ' +
+                               auction.title, auction.last_bidder.email)
             auction.last_bidder = request.user
             auction.current_price = bid_price
             auction.save()
             bid = Bid(bidder=request.user, auction=auction, bid_price=bid_price)
             bid.save()
-            util_send_mail('New bid on your auction', 'A new bid has been done on your auction', auction.seller.email)
+            util_send_mail('New bid on your auction', 'A new bid has been done on ' + auction.title,
+                           auction.seller.email)
             messages.add_message(request, messages.INFO, _("Bid saved"))
         else:
             messages.add_message(request, messages.ERROR, _("Bid is not conform (check the price)"))
@@ -219,3 +222,28 @@ def bid_auction(request, auction_id):
     return HttpResponseRedirect(reverse("YAASApp:auctiondetail", args=(auction_id,)))
 
 
+class BanAuctions(generic.ListView):
+    template_name = 'YAASApp/banauctions.html'
+    context_object_name = 'ban_auctions'
+
+    @method_decorator(login_required)
+    @method_decorator(staff_member_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(BanAuctions, self).dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return Auction.objects.filter(status='BA')
+
+
+@login_required
+@staff_member_required
+def ban_auction(request, auction_id):
+    auction = get_object_or_404(Auction, pk=auction_id)
+    if auction.status == 'AC':
+        auction.status = 'BA'
+        auction.save()
+        util_send_mail("Auction banned", "Your auction: " + auction.title + " has been banned", auction.seller.email)
+        bids = Bid.objects.filter(auction=auction)
+        for bid in bids:
+            util_send_mail("Auction banned", "Auction: " + auction.title + " has been banned", bid.bidder.email)
+        return HttpResponseRedirect(reverse('YAASApp:list_ban_auction'))

@@ -19,6 +19,9 @@ urlpatterns = (
     path('editauction/<int:id>', views.EditUserAuction.as_view(), name='edit_user_auction'),
     path('bidauction/<int:auction_id>', views.bid_auction, name='bid_auction'),
 
+    path('banauctions/', views.BanAuctions.as_view(), name='list_ban_auction'),
+    path('banauctions/<int:auction_id>', views.ban_auction, name='ban_auction'),
+
     path('api/auctions/', api_auction_list),
     path('api/auctions/<int:auction_id>', api_auction_by_id),
     path('api/auctionsbytitle/', api_auction_by_title),

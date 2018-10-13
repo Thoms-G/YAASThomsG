@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Ban auctions{% endblock %}
+
+{% block content %}
+
+{% if ban_auctions %}
+    <ul>
+    {% for auction in ban_auctions %}
+        <li>{{ auction.title }}
+            <div><strong>Description : </strong>{{ auction.description }}</div>
+            <div><strong>{% trans "Seller" %} : </strong>{{ auction.seller }}</div>
+        </li>
+    {% endfor %}
+   </ul>
+{% else %}
+    <p>{% trans "No auctions available"%}</p>
+{% endif %}
+{% endblock %}

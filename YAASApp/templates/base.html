@@ -30,6 +30,9 @@
                 <td><a href="{% url 'YAASApp:createauction' %}">{% trans "Create new auction" %}</a></td>
                 <td><a href="{% url 'YAASApp:auctionuser' %}">{% trans "Your auctions" %}</a></td>
                 <td><a href="{% url 'YAASApp:logout' %}">{% trans "Logout" %}</a></td>
+                {% if user.is_superuser %}
+                    <td><a href="{% url 'YAASApp:list_ban_auction' %}">Ban auctions</a></td>
+                {% endif %}
             </tr>
         </table>
         {% else %}

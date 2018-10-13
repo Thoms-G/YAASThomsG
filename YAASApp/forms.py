@@ -1,8 +1,6 @@
-import datetime
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-# from django.db.models.functions import datetime
 from django.forms import ModelForm
 
 from YAASApp.models import Profile, Auction, Bid
