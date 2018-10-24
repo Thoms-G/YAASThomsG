@@ -1,0 +1,13 @@
+<!-- templates/home.html -->
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    <h2>Emails history</h2>
+
+    {% for email in emails %}
+        <p>{{ email }}</p>
+        <hr>
+    {% endfor %}
+{% endblock %}

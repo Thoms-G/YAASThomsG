@@ -32,6 +32,7 @@
                 <td><a href="{% url 'YAASApp:logout' %}">{% trans "Logout" %}</a></td>
                 {% if user.is_superuser %}
                     <td><a href="{% url 'YAASApp:list_ban_auction' %}">Ban auctions</a></td>
+                    <td><a href="{% url 'YAASApp:emails' %}">Emails</a></td>
                 {% endif %}
             </tr>
         </table>

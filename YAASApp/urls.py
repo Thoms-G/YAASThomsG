@@ -21,9 +21,12 @@ urlpatterns = (
 
     path('banauctions/', views.BanAuctions.as_view(), name='list_ban_auction'),
     path('banauctions/<int:auction_id>', views.ban_auction, name='ban_auction'),
+    path('emails/', views.email_history, name='emails'),
 
     path('api/auctions/', api_auction_list),
     path('api/auctions/<int:auction_id>', api_auction_by_id),
     path('api/auctionsbytitle/', api_auction_by_title),
     path('api/bid/', api_bid_auction),
+
+    path('generatedata/', views.data_generation, name="data_generation"),
 )

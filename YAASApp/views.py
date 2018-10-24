@@ -1,10 +1,12 @@
 import datetime
+import os
 from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response, redirect, get_object_or_404
 from django.urls import reverse
@@ -14,10 +16,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views import generic, View
 from django.utils.translation import ugettext as _
 from YAASApp.forms import ProfileForm, UserForm, AuctionForm, ConfAuctionForm
-from YAASApp.models import Auction, Bid
+from YAASApp.models import Auction, Bid, Profile
 
 # Register a new user
 from YAASApp.utils import util_send_mail
+from YAASThomasGAY.settings import EMAIL_FILE_PATH
 
 
 def change_language(request, lang_code):
@@ -247,3 +250,50 @@ def ban_auction(request, auction_id):
         for bid in bids:
             util_send_mail("Auction banned", "Auction: " + auction.title + " has been banned", bid.bidder.email)
         return HttpResponseRedirect(reverse('YAASApp:list_ban_auction'))
+
+
+@login_required
+@staff_member_required
+def email_history(request):
+    if request.user.is_superuser:
+        directory = EMAIL_FILE_PATH
+        emails = []
+        for file in os.listdir(directory):
+            with open(os.path.join(directory, file), 'r') as email_file:
+                data = email_file.read()
+            emails.append(data)
+        return render(request, 'YAASApp/emails.html', {"emails": emails})
+    else:
+        messages.warning(request, _("You must be admin."))
+        return redirect('YAASApp:auctiondetail')
+
+
+def data_generation(request):
+    Bid.objects.all().delete()
+    Auction.objects.all().delete()
+    User.objects.all().delete()
+
+    names = ["Emma", "Louise", "Jade", "Alice", "Chloé", "Lina", "Mila", "Léa", "Manon", "Rose", "Anna", "Inès", "Camille", "Lola", "Ambre", "Léna", "Zoé", "Juliette", "Julia", "Lou", "Sarah", "Lucie", "Mia", "Jeanne", "Romane", "Agathe", "Éva", "Nina", "Charlotte", "Inaya", "Gabriel", "Louis", "Raphaël", "Jules", "Adam", "Lucas", "Léo", "Hugo", "Arthur", "Nathan", "Liam", "Éthan", "Maël", "Paul", "Tom", "Sacha", "Noah", "Gabin", "Nolan", "Enzo", "Mohamed", "Aaron", "Timéo", "Théo", "Mathis", "Axel", "Victor", "Antoine", "Valentin", "Martin"]
+    surnames = ["Léon", "Yanis", "Augustin", "Éliott", "Maxence", "Évan", "Matheo", "Alexandre", "Thomas", "Simon", "Gaspard", "Naël", "Tiago", "Amir", "Isaac", "Nino", "Ibrahim", "Lyam", "Lenny", "Malo", "Imran", "Marceau", "Alexis", "Kaïs", "Camille", "Noa", "Oscar", "Noam", "Mathys", "Esteban", "Ayden", "Ilyes", "Lorenzo", "Kylian", "Adrien", "Côme", "Wassim", "Ismaël", "Soan", "Amine", "Youssef", "Naïm", "Milo", "Benjamin", "Ayoub", "Joseph", "Owen", "Ali", "William", "Jean", "Louka", "Adem", "Bastien", "Léandre", "Antonin", "Noham", "Logan", "Kenzo", "Younes", "Sandro", "David"]
+    objects = ["mirror", "air freshener", "water bottle", "candle", "sidewalk", "playing card", "perfume", "chalk", "sticky note", "street lights", "cup", "tomato", "desk", "watch", "toothpaste", "scotch tape", "ring", "model car", "television", "shoes", "fridge", "beef", "lace", "food", "face wash", "blanket", "radio", "wagon", "drawer", "tooth picks", "mp3 player", "puddle", "spring", "controller", "bowl", "couch", "glow stick", "boom box", "paper", "bookmark", "rubber band", "needle", "toilet", "wallet", "headphones", "helmet", "newspaper", "washing machine", "keyboard", "milk", "house", "fake flowers", "chair", "blouse", "lip gloss", "thread", "cookie jar", "clock", "clamp", "glasses", "shovel", "tissue box", "rubber duck", "tv", "teddies", "eraser", "towel", "clothes", "chapter book", "packing peanuts", "sailboat", "white out", "knife", "toothbrush", "chocolate", "lotion", "nail file", "flowers", "thermostat", "money", "sun glasses", "coasters", "speakers", "bag", "ipod", "vase", "doll", "eye liner", "sharpie", "bracelet", "cat", "stop sign", "greeting card", "window", "soap", "picture frame", "hair tie", "candy wrapper", "hair brush", "soy sauce packet", "photo album", "bottle", "leg warmers", "conditioner", "balloon", "grid paper", "phone", "seat belt", "shampoo", "shawl", "plastic fork", "rug", "remote", "credit card", "floor", "car", "soda can", "canvas", "spoon", "pants"]
+
+    User.objects.create_superuser(username="admin", password="admin2018", email="admin@mail.com").save()
+
+    for i in range(len(names)):
+        user = User.objects.create(first_name=names[i], last_name=surnames[i], username=names[i],
+                                   password="mdp__"+names[i],
+                                   email=names[i]+"@mail.com")
+
+        user.save()
+
+        Profile.objects.create(user=user, preferred_language="en").save()
+        price = (12*i+7) % 100
+        auction = Auction.objects.create(title=objects[i],
+                                         description="See my "+objects[i],
+                                         seller=user,
+                                         deadline=datetime.datetime.now()+datetime.timedelta(days=price+4),
+                                         minimum_price=price,
+                                         current_price=price,
+                                         last_bidder=None).save()
+
+    return redirect("YAASApp:auctionindex")
