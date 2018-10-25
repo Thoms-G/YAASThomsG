@@ -41,8 +41,6 @@ def register(request):
         profile_form = ProfileForm(data=request.POST)
         if user_form.is_valid() and profile_form.is_valid():
             user = user_form.save()
-            user.set_password(user.password)
-            user.save()
 
             profile = profile_form.save(commit=False)
             profile.user = user
@@ -273,27 +271,59 @@ def data_generation(request):
     Auction.objects.all().delete()
     User.objects.all().delete()
 
-    names = ["Emma", "Louise", "Jade", "Alice", "Chloé", "Lina", "Mila", "Léa", "Manon", "Rose", "Anna", "Inès", "Camille", "Lola", "Ambre", "Léna", "Zoé", "Juliette", "Julia", "Lou", "Sarah", "Lucie", "Mia", "Jeanne", "Romane", "Agathe", "Éva", "Nina", "Charlotte", "Inaya", "Gabriel", "Louis", "Raphaël", "Jules", "Adam", "Lucas", "Léo", "Hugo", "Arthur", "Nathan", "Liam", "Éthan", "Maël", "Paul", "Tom", "Sacha", "Noah", "Gabin", "Nolan", "Enzo", "Mohamed", "Aaron", "Timéo", "Théo", "Mathis", "Axel", "Victor", "Antoine", "Valentin", "Martin"]
-    surnames = ["Léon", "Yanis", "Augustin", "Éliott", "Maxence", "Évan", "Matheo", "Alexandre", "Thomas", "Simon", "Gaspard", "Naël", "Tiago", "Amir", "Isaac", "Nino", "Ibrahim", "Lyam", "Lenny", "Malo", "Imran", "Marceau", "Alexis", "Kaïs", "Camille", "Noa", "Oscar", "Noam", "Mathys", "Esteban", "Ayden", "Ilyes", "Lorenzo", "Kylian", "Adrien", "Côme", "Wassim", "Ismaël", "Soan", "Amine", "Youssef", "Naïm", "Milo", "Benjamin", "Ayoub", "Joseph", "Owen", "Ali", "William", "Jean", "Louka", "Adem", "Bastien", "Léandre", "Antonin", "Noham", "Logan", "Kenzo", "Younes", "Sandro", "David"]
-    objects = ["mirror", "air freshener", "water bottle", "candle", "sidewalk", "playing card", "perfume", "chalk", "sticky note", "street lights", "cup", "tomato", "desk", "watch", "toothpaste", "scotch tape", "ring", "model car", "television", "shoes", "fridge", "beef", "lace", "food", "face wash", "blanket", "radio", "wagon", "drawer", "tooth picks", "mp3 player", "puddle", "spring", "controller", "bowl", "couch", "glow stick", "boom box", "paper", "bookmark", "rubber band", "needle", "toilet", "wallet", "headphones", "helmet", "newspaper", "washing machine", "keyboard", "milk", "house", "fake flowers", "chair", "blouse", "lip gloss", "thread", "cookie jar", "clock", "clamp", "glasses", "shovel", "tissue box", "rubber duck", "tv", "teddies", "eraser", "towel", "clothes", "chapter book", "packing peanuts", "sailboat", "white out", "knife", "toothbrush", "chocolate", "lotion", "nail file", "flowers", "thermostat", "money", "sun glasses", "coasters", "speakers", "bag", "ipod", "vase", "doll", "eye liner", "sharpie", "bracelet", "cat", "stop sign", "greeting card", "window", "soap", "picture frame", "hair tie", "candy wrapper", "hair brush", "soy sauce packet", "photo album", "bottle", "leg warmers", "conditioner", "balloon", "grid paper", "phone", "seat belt", "shampoo", "shawl", "plastic fork", "rug", "remote", "credit card", "floor", "car", "soda can", "canvas", "spoon", "pants"]
+    names = ["Emma", "Louise", "Jade", "Alice", "Chloé", "Lina", "Mila", "Léa", "Manon", "Rose", "Anna", "Inès",
+             "Camille", "Lola", "Ambre", "Léna", "Zoé", "Juliette", "Julia", "Lou", "Sarah", "Lucie", "Mia", "Jeanne",
+             "Romane", "Agathe", "Éva", "Nina", "Charlotte", "Inaya", "Gabriel", "Louis", "Raphaël", "Jules", "Adam",
+             "Lucas", "Léo", "Hugo", "Arthur", "Nathan", "Liam", "Éthan", "Maël", "Paul", "Tom", "Sacha", "Noah",
+             "Gabin", "Nolan", "Enzo", "Mohamed", "Aaron", "Timéo", "Théo", "Mathis", "Axel", "Victor", "Antoine",
+             "Valentin", "Martin"]
+    surnames = ["Léon", "Yanis", "Augustin", "Éliott", "Maxence", "Évan", "Matheo", "Alexandre", "Thomas", "Simon",
+                "Gaspard", "Naël", "Tiago", "Amir", "Isaac", "Nino", "Ibrahim", "Lyam", "Lenny", "Malo", "Imran",
+                "Marceau", "Alexis", "Kaïs", "Camille", "Noa", "Oscar", "Noam", "Mathys", "Esteban", "Ayden", "Ilyes",
+                "Lorenzo", "Kylian", "Adrien", "Côme", "Wassim", "Ismaël", "Soan", "Amine", "Youssef", "Naïm", "Milo",
+                "Benjamin", "Ayoub", "Joseph", "Owen", "Ali", "William", "Jean", "Louka", "Adem", "Bastien", "Léandre",
+                "Antonin", "Noham", "Logan", "Kenzo", "Younes", "Sandro", "David"]
+    objects = ["mirror", "air freshener", "water bottle", "candle", "sidewalk", "playing card", "perfume", "chalk",
+               "sticky note", "street lights", "cup", "tomato", "desk", "watch", "toothpaste", "scotch tape", "ring",
+               "model car", "television", "shoes", "fridge", "beef", "lace", "food", "face wash", "blanket", "radio",
+               "wagon", "drawer", "tooth picks", "mp3 player", "puddle", "spring", "controller", "bowl", "couch",
+               "glow stick", "boom box", "paper", "bookmark", "rubber band", "needle", "toilet", "wallet", "headphones",
+               "helmet", "newspaper", "washing machine", "keyboard", "milk", "house", "fake flowers", "chair", "blouse",
+               "lip gloss", "thread", "cookie jar", "clock", "clamp", "glasses", "shovel", "tissue box", "rubber duck",
+               "tv", "teddies", "eraser", "towel", "clothes", "chapter book", "packing peanuts", "sailboat",
+               "white out", "knife", "toothbrush", "chocolate", "lotion", "nail file", "flowers", "thermostat", "money",
+               "sun glasses", "coasters", "speakers", "bag", "ipod", "vase", "doll", "eye liner", "sharpie", "bracelet",
+               "cat", "stop sign", "greeting card", "window", "soap", "picture frame", "hair tie", "candy wrapper",
+               "hair brush", "soy sauce packet", "photo album", "bottle", "leg warmers", "conditioner", "balloon",
+               "grid paper", "phone", "seat belt", "shampoo", "shawl", "plastic fork", "rug", "remote", "credit card",
+               "floor", "car", "soda can", "canvas", "spoon", "pants"]
 
     User.objects.create_superuser(username="admin", password="admin2018", email="admin@mail.com").save()
+    auctions = []
 
     for i in range(len(names)):
         user = User.objects.create(first_name=names[i], last_name=surnames[i], username=names[i],
-                                   password="mdp__"+names[i],
-                                   email=names[i]+"@mail.com")
-
+                                   email=names[i] + "@mail.com")
+        user.set_password("mdp!!" + names[i] + "12345**")
         user.save()
 
         Profile.objects.create(user=user, preferred_language="en").save()
-        price = (12*i+7) % 100
-        auction = Auction.objects.create(title=objects[i],
-                                         description="See my "+objects[i],
-                                         seller=user,
-                                         deadline=datetime.datetime.now()+datetime.timedelta(days=price+4),
-                                         minimum_price=price,
-                                         current_price=price,
-                                         last_bidder=None).save()
+        price = (12 * i + 7) % 100
+        a = Auction.objects.create(title=objects[i],
+                                   description="See my " + objects[i],
+                                   seller=user,
+                                   deadline=datetime.datetime.now() + datetime.timedelta(days=price + 4),
+                                   minimum_price=price,
+                                   current_price=price,
+                                   last_bidder=None)
+        a.save()
+        auctions.append(a)
+
+        if i != 0:
+            auction = auctions[i - 1]
+            auction.current_price = auction.minimum_price + price
+            auction.last_bidder = user
+            auction.save()
+            Bid.objects.create(bidder=user, auction=auction, bid_price=auction.current_price)
 
     return redirect("YAASApp:auctionindex")

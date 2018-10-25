@@ -13,7 +13,7 @@ class UserForm(UserCreationForm):
 
 
 class ProfileForm(ModelForm):
-    preferred_language = forms.ChoiceField(choices=(('EN', 'English'), ('FR', 'Francais')))
+    preferred_language = forms.ChoiceField(choices=(('en', 'English'), ('fr', 'Francais')))
 
     class Meta:
         model = Profile

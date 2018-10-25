@@ -4,7 +4,6 @@
 {% block content %}
 <h2>Login</h2>
   <form action="{% url 'YAASApp:login' %}" method="post">
-      {% csrf_token %}
       <div>{% trans "Username" %} : <input type="text" name="username" id="username"></div>
       <br/>
       <div>{% trans "Password" %} : <input type="password" name="password" id="password"></div>
