@@ -20,7 +20,7 @@ from YAASApp.models import Auction, Bid, Profile
 
 # Register a new user
 from YAASApp.utils import util_send_mail
-from YAASThomasGAY.settings import EMAIL_FILE_PATH
+from YAASThomasGAY.settings import EMAIL_FILE_PATH, TIME_ZONE
 
 
 def change_language(request, lang_code):
@@ -105,7 +105,7 @@ def create_auction(request):
         if auction_form.is_valid():
             auction = auction_form.save(commit=False)
 
-            if auction.deadline < datetime.datetime.now(auction.deadline.tzinfo) + datetime.timedelta(days=3):
+            if auction.deadline < datetime.datetime.now(auction.deadline.tzinfo):# + datetime.timedelta(days=3):
                 messages.warning(request, "Deadline is not valid")
                 return render(request, 'YAASApp/createauction.html', {'auction_form': auction_form})
 
@@ -148,7 +148,7 @@ class AuctionIndex(generic.ListView):
     context_object_name = 'auction_list'
 
     def get_queryset(self):
-        return Auction.objects.filter(status='AC')
+        return Auction.objects.filter(status='AC').order_by('deadline')
 
 
 class AuctionSearch(generic.ListView):
