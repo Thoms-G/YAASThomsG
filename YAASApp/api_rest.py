@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404
 from YAASApp.models import Auction, Bid
 from YAASApp.serializers import AuctionSerializer, BidSerializer
 from YAASApp.utils import util_send_mail
+from YAASApp.views import soft_deadline
 
 
 @api_view(['GET'])
@@ -58,6 +59,7 @@ def api_bid_auction(request):
             bid = Bid(bidder=request.user, auction=auction, bid_price=bid_price)
             bid.save()
             util_send_mail('New bid on your auction', 'A new bid has been done on your auction', auction.seller.email)
+            soft_deadline(auction=auction)
             serializer = BidSerializer(bid)
             return Response(serializer.data)
         else:

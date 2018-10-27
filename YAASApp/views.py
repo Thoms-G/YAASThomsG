@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response, redirect, get_object_or_404
 from django.urls import reverse
-from django.utils import translation
+from django.utils import translation, timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views import generic, View
@@ -214,6 +214,7 @@ def bid_auction(request, auction_id):
             util_send_mail('New bid on your auction', 'A new bid has been done on ' + auction.title,
                            auction.seller.email)
             messages.add_message(request, messages.INFO, _("Bid saved"))
+            soft_deadline(auction=auction)
         else:
             messages.add_message(request, messages.ERROR, _("Bid is not conform (check the price)"))
 
@@ -221,6 +222,12 @@ def bid_auction(request, auction_id):
         messages.add_message(request, messages.ERROR, _("Bid is not conform (check the price)"))
 
     return HttpResponseRedirect(reverse("YAASApp:auctiondetail", args=(auction_id,)))
+
+
+def soft_deadline(auction):
+    if auction.deadline - datetime.timedelta(minutes=5) < timezone.now() < auction.deadline:
+        auction.deadline += datetime.timedelta(minutes=5)
+        auction.save()
 
 
 class BanAuctions(generic.ListView):

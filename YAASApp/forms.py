@@ -23,7 +23,7 @@ class ProfileForm(ModelForm):
 class AuctionForm(ModelForm):
     title = forms.CharField(required=True)
     deadline = forms.DateTimeField(input_formats=['%d/%m/%Y %H:%M:%S'], required=False,
-                                   help_text='Format dd/mm/YY HH:MM:SS')
+                                   help_text='Format dd/mm/YYYY HH:MM:SS')
 
     class Meta:
         model = Auction
